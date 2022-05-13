@@ -9,7 +9,16 @@
 
 //INCLUDE
 #include	"GameApp.h"
+#include	"Player.h"
 
+//カメラ
+CCamera			gCamera;
+//ライト
+CDirectionalLight	gLight;
+//プレイヤー
+CPlayer			gPlayer;
+//デバックの表示フラグ
+bool			gbDebug = false;
 /*************************************************************************//*!
 		@brief			アプリケーションの初期化
 		@param			None
@@ -20,6 +29,22 @@
 MofBool CGameApp::Initialize(void){
 	//リソース配置ディレクトリの設定
 	CUtilities::SetCurrentDirectory("Resource");
+
+	//カメラ初期化
+	gCamera.SetViewPort();
+	gCamera.LookAt(Vector3(0, 6.0f, -17.0f), Vector3(0, 0, -10), Vector3(0, 1, 0));
+	gCamera.PerspectiveFov(MOF_ToRadian(60.0f), 1024.0f / 768.0f,0.01f, 1000.0f);
+	CGraphicsUtilities::SetCamera(&gCamera);
+
+	//ライト初期化
+	gLight.SetDirection(Vector3(-1, -2, 1.5f));
+	gLight.SetDiffuse(MOF_COLOR_WHITE);
+	gLight.SetAmbient(MOF_COLOR_WHITE);
+	gLight.SetSpeculer(MOF_COLOR_WHITE);
+	CGraphicsUtilities::SetDirectionalLight(&gLight);
+
+	//プレイヤーの素材読み込み
+	gPlayer.Initialize();
 	
 	return TRUE;
 }
@@ -33,6 +58,22 @@ MofBool CGameApp::Initialize(void){
 MofBool CGameApp::Update(void){
 	//キーの更新
 	g_pInput->RefreshKey();
+	//プレイヤーの更新
+	gPlayer.Update();
+	//デバック表示の切り替え
+	if (g_pInput->IsKeyPush(MOFKEY_F1))
+	{
+		gbDebug = ((gbDebug) ? false : true);
+	}
+	//プレイヤーに合わせてカメラを動かす
+	float posX = gPlayer.GetPosition().x * 0.4f;
+	CVector3 cPos = gCamera.GetViewPosition();
+	CVector3 tPos = gCamera.GetTargetPosition();
+	CVector3 vup = CVector3(0, 1, 0);
+	cPos.x = posX;
+	tPos.x = posX;
+	gCamera.LookAt(cPos, tPos, vup);
+	gCamera.Update();
 	return TRUE;
 }
 
@@ -61,5 +102,6 @@ MofBool CGameApp::Render(void){
 						それ以外	失敗、エラーコードが戻り値となる
 *//**************************************************************************/
 MofBool CGameApp::Release(void){
+	gPlayer.Release();
 	return TRUE;
 }

@@ -20,4 +20,9 @@ public:
 	void RenderDebugText();
 	const CVector3 GetPosition(){ return m_Pos; }
 	void Release();
+
+
+	class Player
+	{
+	};
 };
