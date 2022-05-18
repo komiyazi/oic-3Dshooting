@@ -44,6 +44,8 @@ MofBool CGameApp::Initialize(void){
 	CGraphicsUtilities::SetDirectionalLight(&gLight);
 
 	//プレイヤーの素材読み込み
+	gPlayer.Load();
+	//プレイヤーの状態初期化
 	gPlayer.Initialize();
 	
 	return TRUE;
@@ -89,6 +91,31 @@ MofBool CGameApp::Render(void){
 	g_pGraphics->RenderStart();
 	// 画面のクリア
 	g_pGraphics->ClearTarget(0.65f,0.65f,0.67f,0.0f,1.0f,0);
+
+	//深度バッファ有効化
+	g_pGraphics->SetDepthEnable(TRUE);
+
+	//プレイヤー描画
+	gPlayer.Render();
+
+	//3Dデバック描画
+	if (gbDebug)
+	{
+		//移動可能範囲の表示
+		CMatrix44 matWorld;
+		matWorld.Scaling(FIELD_HALF_X * 2, 1, FIELD_HALF_Z * 2);
+		CGraphicsUtilities::RenderPlane(matWorld, Vector4(1, 1, 1, 0.4f));
+	}
+
+	//深度バッファ無効化
+	g_pGraphics->SetDepthEnable(FALSE);
+
+	//２Dデバック描画
+	if (gbDebug)
+	{
+		//プレイヤーのデバック文字描画
+		gPlayer.RenderDebugText();
+	}
 
 	// 描画の終了
 	g_pGraphics->RenderEnd();
