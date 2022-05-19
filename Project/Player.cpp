@@ -45,13 +45,13 @@ void CPlayer::Update(void){
 	//キーボードでの移動
 	if (g_pInput->IsKeyHold(MOFKEY_LEFT))
 	{
-		m_Pos.x = max(-PLAYER_SPEED, -FIELD_HALF_X);
-		Roll = MOF_MATH_PI;
+		m_Pos.x = max(m_Pos.x -PLAYER_SPEED, -FIELD_HALF_X);
+		Roll-= MOF_MATH_PI;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_RIGHT))
 	{
 		m_Pos.x = min(m_Pos.x + PLAYER_SPEED, FIELD_HALF_X);
-		Roll = MOF_MATH_PI;
+		Roll += MOF_MATH_PI;
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_UP))
 	{
@@ -59,7 +59,7 @@ void CPlayer::Update(void){
 	}
 	if (g_pInput->IsKeyHold(MOFKEY_DOWN))
 	{
-		m_Pos.z = max(m_Pos.z + PLAYER_SPEED, FIELD_HALF_Z);
+		m_Pos.z = max(m_Pos.z - PLAYER_SPEED, -FIELD_HALF_Z);
 	}
 	//回転
 	float RotSpeed = MOF_ToRadian(10);
