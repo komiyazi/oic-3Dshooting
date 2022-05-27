@@ -10,6 +10,8 @@
 //INCLUDE
 #include	"GameApp.h"
 #include	"Player.h"
+#include	"Stage.h"
+
 
 //カメラ
 CCamera			gCamera;
@@ -17,6 +19,8 @@ CCamera			gCamera;
 CDirectionalLight	gLight;
 //プレイヤー
 CPlayer			gPlayer;
+//ステージ
+CStage			gStage;
 //デバックの表示フラグ
 bool			gbDebug = false;
 /*************************************************************************//*!
@@ -45,8 +49,12 @@ MofBool CGameApp::Initialize(void){
 
 	//プレイヤーの素材読み込み
 	gPlayer.Load();
+	//ステージ素材読み込み
+	gStage.Load();
 	//プレイヤーの状態初期化
 	gPlayer.Initialize();
+	//ステージの状態初期化
+	gStage.Initialize();
 	
 	return TRUE;
 }
@@ -62,6 +70,8 @@ MofBool CGameApp::Update(void){
 	g_pInput->RefreshKey();
 	//プレイヤーの更新
 	gPlayer.Update();
+	//ステージの更新
+	gStage.Update();
 	//デバック表示の切り替え
 	if (g_pInput->IsKeyPush(MOFKEY_F1))
 	{
@@ -74,6 +84,7 @@ MofBool CGameApp::Update(void){
 	CVector3 vup = CVector3(0, 1, 0);
 	cPos.x = posX;
 	tPos.x = posX;
+	vup.RotationZ(gPlayer.GetPosition().x / FIELD_HALF_X * MOF_ToRadian(10.0f));
 	gCamera.LookAt(cPos, tPos, vup);
 	gCamera.Update();
 	return TRUE;
@@ -97,7 +108,8 @@ MofBool CGameApp::Render(void){
 
 	//プレイヤー描画
 	gPlayer.Render();
-
+	//ステージ描画
+	gStage.Render();
 	//3Dデバック描画
 	if (gbDebug)
 	{
@@ -115,6 +127,8 @@ MofBool CGameApp::Render(void){
 	{
 		//プレイヤーのデバック文字描画
 		gPlayer.RenderDebugText();
+		//ステージのデバック文字描画
+		gStage.RenderDebugText();
 	}
 
 	// 描画の終了
@@ -130,5 +144,6 @@ MofBool CGameApp::Render(void){
 *//**************************************************************************/
 MofBool CGameApp::Release(void){
 	gPlayer.Release();
+	gStage.Release();
 	return TRUE;
 }
